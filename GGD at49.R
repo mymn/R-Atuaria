@@ -9,6 +9,13 @@ print(AT49)
 #AT49M = x,4
 #AT49F = x 8
 
+param_GGD=function(){
+    lambda=runif(n=1,min=0.0003,max=0.0004)
+    theta=runif(n=1,min=1.2,max=2.0)
+    c=runif(n=1,min=0.06,max=0.07)
+  return(lambda,theta,c)
+}
+#funcao para criar os parametros da GGD
 #print(AT49[1,4]) para chamar
 
 #lambda = 0.0003~0.0004
@@ -19,45 +26,27 @@ simnum=1000
 Estim=c()
 reserva=c()
 #numero de simulacoes 
-for(i in 1:simnum){
-  valor=0
-  lambda=runif(n=1,min=0.0003,max=0.0004)
-  theta=runif(n=1,min=1.2,max=2.0)
-  c=runif(n=1,min=0.06,max=0.07)
-  for(j in 1:110){
-    Estim=c(Estim,1-(1-exp((-lambda/c)*(exp(c*(j-1)-1)))^theta))
-    valor=valor+(1/(1+taxajuros)^(j-1))*Estim[j]
+for(i in simnum){
+  param_GGD()
+  for(k in 1:omega){
+    valor=0
+    for(j in 1:110){
+      Estim=c(Estim,1-(1-exp((-lambda/c)*(exp(c*(j-1)-1)))^theta))
+      valor=valor+(1/(1+taxajuros)^(AT49[j,13]))*(Estim[AT49[k+j-1],13]/Estim[AT49[k,13]])
+      if (AT49[k]+j-1==0){
+        break
+      }
+    }
+    reserva=c(reserva,valor)
   }
-  reserva=c(reserva,valor)
 }
-
 hist(reserva, xlab="Reserva", ylab="Frequencia")
+for(i in AT49[1,13]:omega){
+  BenetabM=c(BenetabM,((AT49[i,9]/AT49[i,10])*AT49[i,14])
+BenetabF=c(BenetabF,)
 
-#sobreestim=function(lambda,c,theta){
-# for(i in 1:110){
-#    Estim[i]=1-(1-EXP((-lambda/c)*(EXP(c*(i-1)-1)))^theta)
-#  }
-#return(Estim)
-#}
-
-#beneficio=function(Estim,taxajuros){
-#  valor=0
-#  for(i in ...){
-#    valor=valor+(1/(1+taxajuros)^(i-1))*Estim(i)
-#  }
-#  return(valor)
-#}
-
-#reserva=function(Estim,omega,taxajuros){
-#  somatotal=0
-#  for(i in 1:...){
-#    somatotal=somatotal+beneficio(Estim,taxajuros,i)
-#  }
-#  return(somatotal)
-#}
-
-#histogramas=function(reserva...){
-#  for(i in ...){
-#    ggplot...
-#  }
-#}
+for(j in 1:omega){
+  for(i in idade:omega){
+    beneficio=c(beneficio,estim[idade]*AT49[idade,15]*AT49[j,14])
+  }
+}
