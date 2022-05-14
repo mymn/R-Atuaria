@@ -1,9 +1,6 @@
-library(ggplot2)
-library(scales)
 omega=110
 taxajuros=0.05
-#fazer com tabua e comparar
-#Nx/Dx
+#omega e taxa de juros a serem usadas
 library(readxl)
 AT49 <-read_excel("C:/Users/TEMP.LABSTI/Downloads/P1 - at49 (1).xlsx")
 #Alterar o caminho para o local da planilha
@@ -11,29 +8,20 @@ AT49 <-read_excel("C:/Users/TEMP.LABSTI/Downloads/P1 - at49 (1).xlsx")
 #AT49F = x 8
 AT49<-as.data.frame(AT49)
 
-
-param_GGD=function(){
-  GGD=vector("double",3)
-  as.vector(GGD)
-  GGD[1]<-runif(n=1,min=0.0003,max=0.0004)
-  GGD[2]<-runif(n=1,min=1.2,max=2.0)
-  GGD[3]<-runif(n=1,min=0.06,max=0.07)
-}
-#funcao para criar os parametros da GGD
-#onde param[1]=lambda, param[2]=theta e param[3]=c
-#parametros sempre maiores que 0, estimados baseados no MMQ 
-
 simnum=100
-#numero de simulacoes 
+#numero de simulacoes para monte carlo 
 
-survestim=function(omega,param_GGD,simnum){
+survestim=function(omega,simnum){
   Estim=vector("double",omega)
   as.vector(Estim)
   param=vector("double",3)
-  param_GGD() 
-  param[1]=GGD[1]
-  param[2]=GGD[2]
-  param[3]=GGD[3]
+  GGD=vector("double",3)
+  as.vector(GGD)
+  param[1]<-runif(n=1,min=0.0003,max=0.0004)
+  param[2]<-runif(n=1,min=1.2,max=2.0)
+  param[3]<-runif(n=1,min=0.06,max=0.07) 
+#param[1]=lambda, param[2]=theta e param[3]=c
+#parametros estimados baseados no MMQ
   for(j in 1:simnum){
     for(j in 1:omega){
       Estim[j]=Estim[j]+1-(1-exp((-param[1]/param[3])*(exp(param[3]*j)-1)))^param[2];Estim         
@@ -43,12 +31,15 @@ survestim=function(omega,param_GGD,simnum){
 }
 #funcao para calculo da curva estimada de sobrevivencia por monte carlo
 plot(Estim)
+#verificar a curva de sobrevivencia
 repeticoes=10
-beneficio=function(AT49,omega,survestim,param_GGD,repeticoes){
+#numero de simulacoes da carteira 
+beneficio=function(omega,repeticoes,simnum){
   bene=0
   reserva=vector("double",repeticoes)
   as.vector(reserva)
   for(n in 1:repeticoes){
+    survestim(omega,simnum)
     for(j in 1:110){
       idade = AT49[j,13]
 #loop para a carteira
@@ -61,8 +52,8 @@ beneficio=function(AT49,omega,survestim,param_GGD,repeticoes){
   bene=0
   }
 }
+print(reserva)
 #calculo da reserva da carteira BD em n iteracoes
-
 
 
 hist(reserva)
