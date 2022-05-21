@@ -1,0 +1,34 @@
+#unificar fluxos de caixa em vetores menores(vertices)
+#comparacao e alocar fluxos no intervalo mais proximo
+#derivativo para balancear passivos, caso dolar
+#usar datas julianas(01/01/1900)
+#data pode ser no formato que quiser
+library(epitools)
+library(chron)
+calendr="01/02/1995"
+as.Date(calendr, "%d/%m/%y")
+View(calendr)
+
+Tocalendar=function(calendr){ #tranformar data juliana em data(dd/mm/aaaa)
+  calendr=as.Date(calendr, origin="1900/01/01")
+  calendr=as.Date(calendr, "%y/%m/%d")
+  return(calendr)
+}
+calendr=2
+Tojulian=function(calendr){ #transformar data em data juliana
+  calendr=julian(calendr,origin=(c(month = 1, day = 1, year = 1900)))
+  return(calendr)
+}
+calendr
+#funcao para distribuir fluxos nos vertices
+#fluxo data+valor
+#ativo positivo, passivo negativo
+#vetor vertices ate 80~90 e expansivel para n
+#ex n vertices e n fluxos
+#fluxo vetor de valores e data
+#comparar valor data fluxo convertido em juliana e encaixar no vertice
+
+fluxo[tempo,valor]
+vertices=function(fluxo(valor,vencimento)){
+  
+}
