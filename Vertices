@@ -5,21 +5,20 @@
 #data pode ser no formato que quiser
 library(epitools)
 library(chron)
+library(timeDate)
 calendr="01/02/1995"
 as.Date(calendr, "%d/%m/%y")
 View(calendr)
 
 Tocalendar=function(calendr){ #tranformar data juliana em data(dd/mm/aaaa)
   calendr=as.Date(calendr, origin="1900/01/01")
-  calendr=as.Date(calendr, "%y/%m/%d")
-  return(calendr)
 }
-calendr=2
+
 Tojulian=function(calendr){ #transformar data em data juliana
-  calendr=julian(calendr,origin=(c(month = 1, day = 1, year = 1900)))
-  return(calendr)
+  calendr=julian.Date(calendr,origin=as.Date("1900-01-01"))
 }
-calendr
+
+
 #funcao para distribuir fluxos nos vertices
 #fluxo data+valor
 #ativo positivo, passivo negativo
@@ -27,8 +26,14 @@ calendr
 #ex n vertices e n fluxos
 #fluxo vetor de valores e data
 #comparar valor data fluxo convertido em juliana e encaixar no vertice
+a=Tocalendar(5)
+a=Tojulian(a)
+a
 
 fluxo[tempo,valor]
+vertice[,2]=c(Tojulian(1)#inserir datas dos vertices
 vertices=function(fluxo(valor,vencimento)){
   
 }
+
+#vertice coluna 1 = index, coluna 2 = data juliana, coluna 3 = valor
