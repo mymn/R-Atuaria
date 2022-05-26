@@ -1,12 +1,11 @@
 #unificar fluxos de caixa em vetores menores(vertices)
 #comparacao e alocar fluxos no intervalo mais proximo
-#derivativo para balancear passivos, caso dolar
 #usar datas julianas(01/01/1900)
-#data pode ser no formato que quiser
+
 library(epitools)
 library(chron)
 library(timeDate)
-calendr="01/02/1995"
+calendr="01/06/2022"
 as.Date(calendr, "%d/%m/%y")
 View(calendr)
 
@@ -19,21 +18,32 @@ Tojulian=function(calendr){ #transformar data em data juliana
 }
 
 
-#funcao para distribuir fluxos nos vertices
-#fluxo data+valor
-#ativo positivo, passivo negativo
-#vetor vertices ate 80~90 e expansivel para n
-#ex n vertices e n fluxos
-#fluxo vetor de valores e data
-#comparar valor data fluxo convertido em juliana e encaixar no vertice
-a=Tocalendar(5)
-a=Tojulian(a)
-a
+#criacao do vetor de fluxos
+nfluxos=5 #numero de fluxos
+fluxo=matrix(nrow=nfluxos,ncol=2)#[tempo,valor]tempo em data juliana
+colnames(fluxo) <- c("Vencimento data juliana", "Valor")
 
-fluxo[tempo,valor]
-vertice[,2]=c(Tojulian(1)#inserir datas dos vertices
-vertices=function(fluxo(valor,vencimento)){
-  
+#criacao do vetor de vertices
+nvertices=5 #numero de vertices
+vertices=matrix(nrow=nvertices,ncol=2) #[tempo,valor]
+colnames(vertices) <- c("Data juliana", "Valor")
+
+#vetor teste para fluxo
+fluxo[,1]=c(44500,44100,3000,46000,45500)
+fluxo[,2]=c(1,2,3,4,5)
+
+#preencher os vertices
+vertices[,1]=c(44710,45075,45440,45805,46170) #inserir as datas
+vertices[,2]=0
+
+#funcao para alocar os valores dos fluxos nos vertices
+#compara a primeira coluna com as datas e aloca os valores da segunda
+#coluna com os valores
+#necessario converter em data juliana todos periodos
+fluxovertice=function(nfluxos,fluxo){
+  for(i in 1:nfluxos){
+    vertices[which.min(abs(vertices[,1]-fluxo[i,1])),2]<-vertices[which.min(abs(vertices[,1]-fluxo[i,1])),2]+fluxo[i,2]
+  }
 }
 
-#vertice coluna 1 = index, coluna 2 = data juliana, coluna 3 = valor
+
