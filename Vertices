@@ -1,18 +1,13 @@
-#unificar fluxos de caixa em vetores menores(vertices)
-#comparacao e alocar fluxos no intervalo mais proximo
-#usar datas julianas(01/01/1900)
-
-library(epitools)
-library(chron)
-library(timeDate)
-calendr="01/06/2022"
-as.Date(calendr, "%d/%m/%y")
+calendr="2022/06/01"
+as.Date(calendr, "%y/%m/%d")
 View(calendr)
 
+#ano/mes/dia
 Tocalendar=function(calendr){ #tranformar data juliana em data(dd/mm/aaaa)
   calendr=as.Date(calendr, origin="1900/01/01")
 }
 
+#ano/mes/dia
 Tojulian=function(calendr){ #transformar data em data juliana
   calendr=julian.Date(calendr,origin=as.Date("1900-01-01"))
 }
@@ -45,5 +40,3 @@ fluxovertice=function(nfluxos,fluxo){
     vertices[which.min(abs(vertices[,1]-fluxo[i,1])),2]<-vertices[which.min(abs(vertices[,1]-fluxo[i,1])),2]+fluxo[i,2]
   }
 }
-
-
