@@ -37,6 +37,7 @@ vertices[,2]=0
 #necessario converter em data juliana todos periodos
 fluxovertice=function(nfluxos,fluxo){
   for(i in 1:nfluxos){
-    vertices[which.min(abs(vertices[,1]-fluxo[i,1])),2]<-vertices[which.min(abs(vertices[,1]-fluxo[i,1])),2]+fluxo[i,2]
+    vertices[which.min(abs(vertices[,1]-fluxo[i,1])),2]=vertices[which.min(abs(vertices[,1]-fluxo[i,1])),2]+fluxo[i,2]
   }
 }
+#ajustar para distribuir baseado na diferenca da distancia
