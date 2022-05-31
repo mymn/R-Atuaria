@@ -21,9 +21,11 @@ SexoTitular=readline(prompt = "Sexo do titular(M ou F): ")
 SexoConjuge=readline(prompt = "Sexo do conjuge(M ou F): ")
 SexoDependente=readline(prompt = "Sexo do depentente(M ou F): ")
 jaxajuros=readline(prompt = "Taxa de juros(decimal): ")
-Tabua=readline(prompt = "Tabua(1=AT2000,2=B...,3=...): ")
+TipoTabua=readline(prompt = "Tabua(1=AT2000,2=B...,3=...): ")
 nvidas=readline(prompt = "Numero de vidas(2 ou 3): ")
 
+library(readxl)
+tabua=read_excel("Arquivo com tabuas")
 agemax=tail(tabua[,1],n=1) #ultima idade da tabua utilizada
 #inicializacao dos vetores de comutacao
 agemax=120
@@ -37,6 +39,7 @@ C=vector(length=agemax)
 M=vector(length=agemax)
 p=vector(length=agemax)
 q=vector(length=agemax)
+
 
 if(nvidas==2){
   #criando dataframes
@@ -68,3 +71,7 @@ if(nvidas==3){
   colnames(tresvidasXYZ)=c("Idade","pxyz","lxyz","dxyz","v^t","Dxyz","Nxyz","Cxyz","Mxyz")
   agemax=tail(tresvidasX[,1],n=1)
 }
+#funcoes para completar as tabuas
+fillonelife()
+filltwolives()
+fillthreelives()
