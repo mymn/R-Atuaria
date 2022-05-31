@@ -26,6 +26,7 @@ nvidas=readline(prompt = "Numero de vidas(2 ou 3): ")
 
 agemax=tail(tabua[,1],n=1) #ultima idade da tabua utilizada
 #inicializacao dos vetores de comutacao
+agemax=120
 idade=c(1:agemax)
 l=vector(length=agemax)
 d=vector(length=agemax)
@@ -37,7 +38,6 @@ M=vector(length=agemax)
 p=vector(length=agemax)
 q=vector(length=agemax)
 
-
 if(nvidas==2){
   #criando dataframes
   duasvidasX=data.frame(idade,q,l,d,vx,D,N,C,M)
@@ -48,4 +48,23 @@ if(nvidas==2){
   colnames(duasvidasY)=c("Idade","qy","ly","dy","v^y","Dy","Ny","Cy","My")
   colnames(duasvidasXY)=c("Idade","pxy","lxy","dxy","v^t","Dxy","Nxy","Cxy","Mxy")
   agemax=tail(duasvidasX[,1],n=1)
+}
+if(nvidas==3){
+  #criando dataframes
+  tresvidasX=data.frame(idade,q,l,d,vx,D,N,C,M)
+  tresvidasY=data.frame(idade,q,l,d,vx,D,N,C,M)
+  tresvidasZ=data.frame(idade,q,l,d,vx,D,N,C,M)
+  tresvidasXY=data.frame(idade,p,l,d,vx,D,N,C,M)
+  tresvidasYZ=data.frame(idade,p,l,d,vx,D,N,C,M)
+  tresvidasXZ=data.frame(idade,p,l,d,vx,D,N,C,M)
+  tresvidasXYZ=data.frame(idade,p,l,d,vx,D,N,C,M)
+  #renomear colunas
+  colnames(tresvidasX)=c("Idade","qx","lx","dx","v^x","Dx","Nx","Cx","Mx")
+  colnames(tresvidasY)=c("Idade","qy","ly","dy","v^y","Dy","Ny","Cy","My")
+  colnames(tresvidasZ)=c("Idade","qz","lz","dz","v^z","Dz","Nz","Cz","Mz")
+  colnames(tresvidasXY)=c("Idade","pxy","lxy","dxy","v^t","Dxy","Nxy","Cxy","Mxy")
+  colnames(tresvidasYZ)=c("Idade","pyz","lyz","dyz","v^t","Dyz","Nyz","Cyz","Myz")
+  colnames(tresvidasXZ)=c("Idade","pxz","lxz","dxz","v^t","Dxz","Nxz","Cxz","Mxz")
+  colnames(tresvidasXYZ)=c("Idade","pxyz","lxyz","dxyz","v^t","Dxyz","Nxyz","Cxyz","Mxyz")
+  agemax=tail(tresvidasX[,1],n=1)
 }
