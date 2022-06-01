@@ -5,27 +5,27 @@
 #3 dataframes para 2 vidas
 #7 dataframes para 3 vidas
 #colnames(Dataframe) <- c("Idade", "q", "l", "d", "v^x", "D", "N", "C", "M")
-#Unir dataframes da mesma categoria(ex 2 vidas), e
-# deletar as colunas extras de idade e desconto
+#colunas impares das tabuas F, pares M. 
 #Dataframe[,4]=Dataframe[+1,3]-Dataframe[,3]*Dataframe[,2]
 #Primeiro dataframe:[Idade,qx,lx,dx,v^x,Dx,Nx,Cx,Mx]
-#a partir disso: [qx,lx,dx,Dx,Nx,Cx,Mx]
 #
-#
-#
-#
-IdadeTitular=readline(prompt = "Idade do titular: ")
-IdadeConjuge=readline(prompt = "Idade do conjuge: ")
-IdadeDependente=readline(prompt = "Idade do dependente: ")
-SexoTitular=readline(prompt = "Sexo do titular(M ou F): ")
-SexoConjuge=readline(prompt = "Sexo do conjuge(M ou F): ")
-SexoDependente=readline(prompt = "Sexo do depentente(M ou F): ")
-taxajuros=as.numeric(readline(prompt = "Taxa de juros(decimal): "))
-TipoTabua=readline(prompt = "Tabua(1=AT2000,2=B...,3=...): ")
-nvidas=readline(prompt = "Numero de vidas(2 ou 3): ")
+#ex: tabua 1, sexo F-> tabua[,1] tabua 2, sexo M -> tabua[,4]
+library(svDialogs)
+input=function(){ #funcao com os inputs
+  IdadeTitular<<-as.numeric(dlgInput("Idade do titular ", Sys.info()["user"])$res)
+  IdadeConjuge<<-as.numeric(dlgInput("Idade do conjuge ", Sys.info()["user"])$res)
+  IdadeDependente<<-as.numeric(dlgInput("Idade do dependente (0 a 24) ", Sys.info()["user"])$res)
+  SexoTitular<<-as.character(dlgInput("Sexo do titular (M ou F) ", Sys.info()["user"])$res)
+  SexoConjuge<<-as.character(dlgInput("Sexo do conjuge (M ou F) ", Sys.info()["user"])$res)
+  SexoDependente<<-as.character(dlgInput("Sexo do dependente (M ou F) ", Sys.info()["user"])$res)
+  taxajuros<<-as.numeric(dlgInput("Taxa de juros (decimal) ", Sys.info()["user"])$res)
+  TipoTabua<<-as.numeric(dlgInput("Tabua(1=AT2000,2=B...,3=...): ", Sys.info()["user"])$res)
+  nvidas<<-as.numeric(dlgInput("Numero de vidas(2 ou 3): ", Sys.info()["user"])$res)
+}
+input() #chamar funcao com os inputs
 
 library(readxl)
-tabua=read_excel("Arquivo com tabuas")
+tabua=read_excel("D:/BrowserDownloads/EAC0424_T_GRUPOXX_TABUAS.xlsx")
 agemax=tail(tabua[,1],n=1) #ultima idade da tabua utilizada
 #inicializacao dos vetores de comutacao
 agemax=120
@@ -72,8 +72,8 @@ if(nvidas==3){
   colnames(tresvidasXYZ)=c("Idade","pxyz","lxyz","dxyz","v^t","Dxyz","Nxyz","Cxyz","Mxyz")
   agemax=tail(tresvidasX[,1],n=1)
 }
-tabuaM=c(length=121)
-tabuaM=c(0.002311000,
+tabua=c(length=121)
+tabua=c(0.002311000,
              0.000906000,
              0.000504000,
              0.000408000,
@@ -193,19 +193,20 @@ tabuaM=c(0.002311000,
 a=function(){duasvidasX[,3]-duasvidasX[,4]}
 #funcoes para completar as tabuas
 
-fillonelife=function(duasvidas,taxajuros,tabua,l0){#optimizar remocao das linhas extras (baseado na tabua)
-  duasvidas=duasvidas[-c(117:125),]
-  duasvidas[,2]=tabua#qx
-  duasvidas[1,3]=l0#l0
-  for(i in 2:117){duasvidas[i,3]=duasvidas[i-1,3]-duasvidas[i-1,4]} #lx
-  duasvidas[,4]=duasvidas[,2]*duasvidas[,3] #dx
-  duasvidas[,5]=(1/(1+taxajuros)^duasvidas[,1])#v^t
-  duasvidas[,6]=duasvidas[,3]*duasvidas[,5] #Dx
-  for(i in 1:116){duasvidas[i,7]=sum(duasvidas[i,6]:duasvidas[116,6])}#NX
-  for(i in 1:115){duasvidas[i,8]=duasvidas[i,4]*duasvidas[i+1,5]} #Cx
-  for(i in 1:115){duasvidas[i,9]=sum(duasvidas[i,8]:duasvidas[115,8])} #Mx
-  duasvidas=duasvidas[-c(117),]
+fillonelife=function(onelife,taxajuros,tabua,l0){#optimizar remocao das linhas extras (baseado na tabua)
+  onelife=onelife[-c(117:125),]
+  onelife[,2]=tabua#qx
+  onelife[1,3]=l0#l0
+  for(i in 2:117){onelife[i,3]=onelife[i-1,3]-onelife[i-1,4]} #lx
+  onelife[,4]=onelife[,2]*onelife[,3] #dx
+  onelife[,5]=(1/(1+taxajuros)^onelife[,1])#v^t
+  onelife[,6]=onelife[,3]*onelife[,5] #Dx
+  for(i in 1:116){onelife[i,7]=sum(onelife[i,6]:onelife[116,6])}#NX
+  for(i in 1:115){onelife[i,8]=onelife[i,4]*onelife[i+1,5]} #Cx
+  for(i in 1:115){onelife[i,9]=sum(onelife[i,8]:onelife[115,8])} #Mx
+  onelife=onelife[-c(117),]
 }
-duasvidasY=fillonelife(duasvidasY)
+duasvidasY=fillonelife(duasvidasY,taxajuros,tabua,l0)
+
 filltwolives()
 fillthreelives()
