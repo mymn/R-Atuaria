@@ -1,31 +1,3 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Marketplace
-Explore
-
-@mymn 
-mymn
-/
-  R-Atuaria
-Private
-Code
-Issues
-Pull requests
-Actions
-Projects
-Security
-Insights
-Settings
-R-Atuaria/Vertices
-@mymn
-mymn Update Vertices
-Latest commit 9dc6a01 5 minutes ago
-History
-1 contributor
-43 lines (35 sloc)  1.3 KB
-
 calendr="2022/06/01"
 as.Date(calendr, "%y/%m/%d")
 View(calendr)
