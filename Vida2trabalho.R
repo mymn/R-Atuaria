@@ -1,15 +1,10 @@
 #Titular X, Conjuge Y, Dependente Z
-#9 colunas por combinacao
-#63 colunas ou 55 colunas com idade reaproveitada
 #1 dataframe para tabuas
 #3 dataframes para 2 vidas
 #7 dataframes para 3 vidas
-#colnames(Dataframe) <- c("Idade", "q", "l", "d", "v^x", "D", "N", "C", "M")
+#colnames(Dataframe) <- c("Idade", "qx", "l", "d", "v^x", "Dx", "N", "Cx", "M")
+#nomenclatura com 'r' devido a conflito com funcoes nativas do R
 #colunas impares das tabuas F, pares M. 
-#Dataframe[,4]=Dataframe[+1,3]-Dataframe[,3]*Dataframe[,2]
-#Primeiro dataframe:[Idade,qx,lx,dx,v^x,Dx,Nx,Cx,Mx]
-#
-#ex: tabua 1, sexo F-> tabua[,1] tabua 2, sexo M -> tabua[,4]
 library(svDialogs)
 input=function(){ #funcao com os inputs
   IdadeTitular<<-as.numeric(dlgInput("Idade do titular ", Sys.info()["user"])$res)
@@ -21,47 +16,60 @@ input=function(){ #funcao com os inputs
   taxajuros<<-as.numeric(dlgInput("Taxa de juros (decimal) ", Sys.info()["user"])$res)
   TipoTabua<<-as.numeric(dlgInput("Tabua(1=AT2000,2=B...,3=...): ", Sys.info()["user"])$res)
   nvidas<<-as.numeric(dlgInput("Numero de vidas(2 ou 3): ", Sys.info()["user"])$res)
+  pensaomorte<<-as.numeric(dlgInput("Pensao por morte(sim=1, nao=0): ", Sys.info()["user"])$res)
+  #valorfacebene<<-as.numeric(dlgInput("Valor de face do beneficio: ", Sys.info()["user"])$res)
+  #duracaocontrato<<-as.numeric(dlgInput("Duracao da vigencia contratual: ", Sys.info()["user"])$res)
+  #pagamento<<-as.numeric(dlgInput("Valor do(s) pagamentos: ", Sys.info()["user"])$res)
+  #coeficientereversao<<-as.numeric(dlgInput("Coeficiente de reversao(em decimal): ", Sys.info()["user"])$res)
 }
+
 input() #chamar funcao com os inputs
 
 library(readxl)
-tabua=read_excel("D:/BrowserDownloads/EAC0424_T_GRUPOXX_TABUAS.xlsx")
-agemax=tail(tabua[,1],n=1) #ultima idade da tabua utilizada
-#inicializacao dos vetores de comutacao
-agemax=120
-l0=10000000
-idade=c(0:agemax)
-l=vector(length=agemax+1)
-d=vector(length=agemax+1)
-vx=vector(length=agemax+1)
-D=vector(length=agemax+1)
-N=vector(length=agemax+1)
-C=vector(length=agemax+1)
-M=vector(length=agemax+1)
-p=vector(length=agemax+1)
-q=vector(length=agemax+1)
-idade
+tabuainput=read_excel("D:/BrowserDownloads/EAC0424_T_GRUPOXX_TABUAS.xlsx")
+
+#agemax=tail(max(which(!is.na(tabuainput[,1]))),n=1) #ultima idade da tabua utilizada
+
+#inicializacao dos vetores de comutacao, podendo-se alterar l0 e tamanho max de cada vetor(agemax)
+variaveis=function(){
+  agemax<<-119
+  l0<<-10000000
+  idade<<-c(0:agemax)
+  l<<-vector(length=agemax+1)
+  d<<-vector(length=agemax+1)
+  vx<<-vector(length=agemax+1)
+  Dx<<-vector(length=agemax+1)
+  N<<-vector(length=agemax+1)
+  Cx<<-vector(length=agemax+1)
+  M<<-vector(length=agemax+1)
+  p<<-vector(length=agemax+1)
+  qx<<-vector(length=agemax+1)
+  variaveis
+}
+
+variaveis()  #chamada da funcao para criacao dos vetores
+  
 
 if(nvidas==2){
   #criando dataframes
-  duasvidasX=data.frame(idade,q,l,d,vx,D,N,C,M)
-  duasvidasY=data.frame(idade,q,l,d,vx,D,N,C,M)
-  duasvidasXY=data.frame(idade,p,l,d,vx,D,N,C,M)
+  duasvidasX=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+  duasvidasY=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+  duasvidasXY=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
   #renomear colunas
   colnames(duasvidasX)=c("Idade","qx","lx","dx","v^x","Dx","Nx","Cx","Mx")
   colnames(duasvidasY)=c("Idade","qy","ly","dy","v^y","Dy","Ny","Cy","My")
   colnames(duasvidasXY)=c("Idade","pxy","lxy","dxy","v^t","Dxy","Nxy","Cxy","Mxy")
-  agemax=tail(duasvidasX[,1],n=1)
+  #agemax=tail(duasvidasX[,1],n=1)
 }
 if(nvidas==3){
   #criando dataframes
-  tresvidasX=data.frame(idade,q,l,d,vx,D,N,C,M)
-  tresvidasY=data.frame(idade,q,l,d,vx,D,N,C,M)
-  tresvidasZ=data.frame(idade,q,l,d,vx,D,N,C,M)
-  tresvidasXY=data.frame(idade,p,l,d,vx,D,N,C,M)
-  tresvidasYZ=data.frame(idade,p,l,d,vx,D,N,C,M)
-  tresvidasXZ=data.frame(idade,p,l,d,vx,D,N,C,M)
-  tresvidasXYZ=data.frame(idade,p,l,d,vx,D,N,C,M)
+  tresvidasX=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+  tresvidasY=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+  tresvidasZ=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+  tresvidasXY=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
+  tresvidasYZ=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
+  tresvidasXZ=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
+  tresvidasXYZ=data.frame(idade,p,l,d,vx,Dx,N,C,M)
   #renomear colunas
   colnames(tresvidasX)=c("Idade","qx","lx","dx","v^x","Dx","Nx","Cx","Mx")
   colnames(tresvidasY)=c("Idade","qy","ly","dy","v^y","Dy","Ny","Cy","My")
@@ -70,143 +78,82 @@ if(nvidas==3){
   colnames(tresvidasYZ)=c("Idade","pyz","lyz","dyz","v^t","Dyz","Nyz","Cyz","Myz")
   colnames(tresvidasXZ)=c("Idade","pxz","lxz","dxz","v^t","Dxz","Nxz","Cxz","Mxz")
   colnames(tresvidasXYZ)=c("Idade","pxyz","lxyz","dxyz","v^t","Dxyz","Nxyz","Cxyz","Mxyz")
-  agemax=tail(tresvidasX[,1],n=1)
+  #agemax=tail(tresvidasX[,1],n=1)
 }
-tabua=c(length=121)
-tabua=c(0.002311000,
-             0.000906000,
-             0.000504000,
-             0.000408000,
-             0.000357000,
-             0.000324000,
-             0.000301000,
-             0.000286000,
-             0.000328000,
-             0.000362000,
-             0.000390000,
-             0.000413000,
-             0.000431000,
-             0.000446000,
-             0.000458000,
-             0.000470000,
-             0.000481000,
-             0.000495000,
-             0.000510000,
-             0.000528000,
-             0.000549000,
-             0.000573000,
-             0.000599000,
-             0.000627000,
-             0.000657000,
-             0.000686000,
-             0.000714000,
-             0.000738000,
-             0.000758000,
-             0.000774000,
-             0.000784000,
-             0.000789000,
-             0.000789000,
-             0.000790000,
-             0.000791000,
-             0.000792000,
-             0.000794000,
-             0.000823000,
-             0.000872000,
-             0.000945000,
-             0.001043000,
-             0.001168000,
-             0.001322000,
-             0.001505000,
-             0.001715000,
-             0.001948000,
-             0.002198000,
-             0.002463000,
-             0.002740000,
-             0.003028000,
-             0.003330000,
-             0.003647000,
-             0.003980000,
-             0.004331000,
-             0.004698000,
-             0.005077000,
-             0.005465000,
-             0.005861000,
-             0.006265000,
-             0.006694000,
-             0.007170000,
-             0.007714000,
-             0.008348000,
-             0.009093000,
-             0.009968000,
-             0.010993000,
-             0.012188000,
-             0.013572000,
-             0.015160000,
-             0.016946000,
-             0.018920000,
-             0.021071000,
-             0.023388000,
-             0.025871000,
-             0.028552000,
-             0.031477000,
-             0.034686000,
-             0.038225000,
-             0.042132000,
-             0.046427000,
-             0.051128000,
-             0.056250000,
-             0.061809000,
-             0.067826000,
-             0.074322000,
-             0.081326000,
-             0.088863000,
-             0.096958000,
-             0.105631000,
-             0.114858000,
-             0.124612000,
-             0.134861000,
-             0.145575000,
-             0.156727000,
-             0.168290000,
-             0.180245000,
-             0.192565000,
-             0.205229000,
-             0.218683000,
-             0.233371000,
-             0.249741000,
-             0.268237000,
-             0.289305000,
-             0.313391000,
-             0.340940000,
-             0.372398000,
-             0.408210000,
-             0.448823000,
-             0.494681000,
-             0.546231000,
-             0.603917000,
-             0.668186000,
-             0.739483000,
-             0.818254000,
-             0.904945000,
-             1.000000000)
 
-a=function(){duasvidasX[,3]-duasvidasX[,4]}
+selecttable=function(Sexo,TipoTabua){
+  if(Sexo=="M" && TipoTabua==1){tabua=c(tabuainput[,2])}
+  else if(Sexo=="F" && TipoTabua==1){tabua=tabuainput[,1]}
+  else if(Sexo=="M" && TipoTabua==2){tabua=tabuainput[,4]}
+  else if(Sexo=="F" && TipoTabua==2){tabua=tabuainput[,3]}
+  else if(Sexo=="M" && TipoTabua==3){tabua=tabuainput[,6]}
+  else if(Sexo=="F" && TipoTabua==3){tabua=tabuainput[,5]}
+}
+
+#alocar tabuas para os individuos escolhidos
+tabuaX=vector(length=agemax)
+tabuaY=vector(length=agemax)
+tabuaZ=vector(length=agemax)
+
+tabuaX=selecttable(SexoTitular,TipoTabua)
+tabuaY=selecttable(SexoConjuge,TipoTabua)
+tabuaZ=selecttable(SexoDependente,TipoTabua)
+
+
+
 #funcoes para completar as tabuas
-
-fillonelife=function(onelife,taxajuros,tabua,l0){#optimizar remocao das linhas extras (baseado na tabua)
-  onelife=onelife[-c(117:125),]
-  onelife[,2]=tabua#qx
-  onelife[1,3]=l0#l0
-  for(i in 2:117){onelife[i,3]=onelife[i-1,3]-onelife[i-1,4]} #lx
-  onelife[,4]=onelife[,2]*onelife[,3] #dx
-  onelife[,5]=(1/(1+taxajuros)^onelife[,1])#v^t
-  onelife[,6]=onelife[,3]*onelife[,5] #Dx
-  for(i in 1:116){onelife[i,7]=sum(onelife[i,6]:onelife[116,6])}#NX
-  for(i in 1:115){onelife[i,8]=onelife[i,4]*onelife[i+1,5]} #Cx
-  for(i in 1:115){onelife[i,9]=sum(onelife[i,8]:onelife[115,8])} #Mx
-  onelife=onelife[-c(117),]
+#funcao para 1 vida
+UmaVida=function(umavida,taxajuros,tabua,l0){
+  umavida[2]=tabua #tabua escolhida
+  umavida[1,3]=l0 #l0
+  umavida[1,4]=umavida[1,2]*umavida[1,3] #d0
+  for(i in 2:116){umavida[i,3]=umavida[i-1,3]-umavida[i-1,4] #lx
+  umavida[i,4]=umavida[i,2]*umavida[i,3]} #dx
+  umavida[5]=(1/(1+taxajuros)^umavida[1])#v^t
+  umavida[6]=umavida[3]*umavida[5] #Dx
+  for(i in 1:116){umavida[i,7]=sum(umavida[i:116,6])}#NX
+  for(i in 1:116){umavida[i,8]=umavida[i,4]*umavida[i+1,5]} #Cx
+  for(i in 1:116){umavida[i,9]=sum(umavida[i:116,8])} #Mx
+  umavida 
 }
-duasvidasY=fillonelife(duasvidasY,taxajuros,tabua,l0)
 
-filltwolives()
-fillthreelives()
+#tabuas de 1 vida 
+duasvidasX=UmaVida(duasvidasX,taxajuros=taxajuros,tabua=tabuaX,l0=l0)
+duasvidasY=UmaVida(duasvidasY,taxajuros,tabua=tabuaY,l0=l0)
+
+tresvidasX=UmaVida(tresvidasX,taxajuros,tabuaX,l0)
+tresvidasY=UmaVida(tresvidasY,taxajuros,tabuaY,l0)
+tresvidasZ=UmaVida(tresvidasZ,taxajuros,tabuaZ,l0)
+
+
+#max(which(!is.na(x))) index do ultimo valor nao nulo em x
+
+#funcao para 2 vidas
+DuasVidas=function(duasvidas,duasvidasX,duasvidasY,taxajuros,l0){
+  #fim=tail(tabua[,1],n=1)
+  for(i in 1:116){
+    duasvidas[i-1,2]=(1-duasvidasX[IdadeTitular+i-1,2])*(1-duasvidasY[IdadeConjuge+i-1,2])}
+  duasvidas[1,3]=l0
+  duasvidas[1,4]=(1-duasvidas[1,2])*duasvidas[1,3] #d0
+  for(i in 2:116){duasvidas[i,3]=duasvidas[i-1,3]-duasvidas[i-1,4] #lx
+  duasvidas[i,4]=(1-duasvidas[i,2])*duasvidas[i,3]} #dx
+  duasvidas[5]=(1/(1+taxajuros)^duasvidas[1])#v^t
+  duasvidas[6]=duasvidas[3]*duasvidas[5] #Dx
+  for(i in 1:max(which(!is.na(duasvidas[2])))){duasvidas[i,7]=sum(duasvidas[i:max(which(!is.na(duasvidas[2]))),6])}#NX
+  for(i in 1:116){duasvidas[i,8]=duasvidas[i,4]*duasvidas[i+1,5]} #Cx
+  for(i in 1:max(which(!is.na(duasvidas[2])))){duasvidas[i,9]=sum(duasvidas[i:max(which(!is.na(duasvidas[2]))),8])} #Mx
+  duasvidas 
+}
+
+
+#tabuas 2 vidas
+duasvidasXY=DuasVidas(duasvidasXY,duasvidasX,duasvidasY,taxajuros,l0)
+tresvidasXY=DuasVidas(tresvidasXY,tresvidasX,tresvidasY,taxajuros,l0)
+tresvidasYZ=DuasVidas(tresvidasYZ,tresvidasY,tresvidasZ,taxajuros,l0)
+tresvidasXZ=DuasVidas(tresvidasXZ,tresvidasX,tresvidasZ,taxajuros,l0)
+
+#funcao para 3 vidas
+TresVidas=function()
+  
+tresvidasXYZ=TresVidas(tresvidasXYZ,tresvidasX,tresvidasY,tresvidasZ,tresvidasXY,tresvidasXZ,tresvidasYZ,taxajuros,l0)
+
