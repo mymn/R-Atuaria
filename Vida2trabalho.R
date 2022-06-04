@@ -17,14 +17,15 @@ input=function(){ #funcao com os inputs
   TipoTabua<<-as.numeric(dlgInput("Tabua(1=AT2000,2=B...,3=...): ", Sys.info()["user"])$res)
   nvidas<<-as.numeric(dlgInput("Numero de vidas(2 ou 3): ", Sys.info()["user"])$res)
   pensaomorte<<-as.numeric(dlgInput("Pensao por morte(sim=1, nao=0): ", Sys.info()["user"])$res)
-  #valorfacebene<<-as.numeric(dlgInput("Valor de face do beneficio: ", Sys.info()["user"])$res)
+  valorfacebene<<-as.numeric(dlgInput("Valor de face do beneficio: ", Sys.info()["user"])$res)
   #duracaocontrato<<-as.numeric(dlgInput("Duracao da vigencia contratual: ", Sys.info()["user"])$res)
   #pagamento<<-as.numeric(dlgInput("Valor do(s) pagamentos: ", Sys.info()["user"])$res)
-  #coeficientereversao<<-as.numeric(dlgInput("Coeficiente de reversao(em decimal): ", Sys.info()["user"])$res)
+  coefreversao<<-as.numeric(dlgInput("Coeficiente de reversao(em decimal): ", Sys.info()["user"])$res)
 }
 
 input() #chamar funcao com os inputs
 
+#local do arquivo com a planilha com as tabuas
 library(readxl)
 tabuainput=read_excel("D:/BrowserDownloads/EAC0424_T_GRUPOXX_TABUAS.xlsx")
 
@@ -35,10 +36,10 @@ variaveis=function(){
   agemax<<-119
   l0<<-10000000
   idade<<-c(0:agemax)
-  l<<-vector(length=agemax+1)
-  d<<-vector(length=agemax+1)
-  vx<<-vector(length=agemax+1)
-  Dx<<-vector(length=agemax+1)
+  l<<-vector(length=agemax+1) #estoque de vidas
+  d<<-vector(length=agemax+1) #numero de mortes no periodo
+  vx<<-vector(length=agemax+1) #desconto a valor presente
+  Dx<<-vector(length=agemax+1) #valores a serem pagos por vida
   N<<-vector(length=agemax+1)
   Cx<<-vector(length=agemax+1)
   M<<-vector(length=agemax+1)
@@ -157,3 +158,30 @@ TresVidas=function()
   
 tresvidasXYZ=TresVidas(tresvidasXYZ,tresvidasX,tresvidasY,tresvidasZ,tresvidasXY,tresvidasXZ,tresvidasYZ,taxajuros,l0)
 
+#calculo 1 vida (falta definir n)
+
+#antecipada
+anuidadeVitAntec=valorfacebene*umavida[Idade,7]/umavida[Idade,6]
+anuidadeTempAntec=valorfacebene*(umavida[Idade,7]-umavida[Idade+n,7])/umavida[Idade,6]
+anuidadeVitDifAntec=valorfacebene*(umavida[Idade+n,7])/umavida[Idade,6]
+#postecipada
+anuidadeVitPos=valorfacebene*umavida[Idade+1,7]/umavida[Idade,6]
+anuidadeTempPos=valorfacebene*(umavida[Idade+1,7]-umavida[Idade+n+1,7])/umavida[Idade,6]
+anuidadeVitDifPos=valorfacebene*(umavida[Idade+n+1,7])/umavida[Idade,6]
+#Seguros Vida PUP
+SeguroVida=valorfacebene*umavida[Idade,9]/umavida[Idade,6]
+SeguroVidaDif=valorfacebene*umavida[Idade+n,9]/umavida[Idade,6]
+SeguroVidaTemp=valorfacebene*(umavida[Idade,9]-umavida[Idade+n,9])/umavida[Idade,6]
+#seguros vida anuais puros nivelados
+SeguroVidaAnual=valorfacebene*umavida[Idade,9]/umavida[Idade,7]
+SeguroVidaTemp=valorfacebene*(umavida[Idade,9]-umavida[Idade+n,9])/umavida[Idade,6]/(umavida[Idade,7]-umavida[Idade+n,7])/umavida[Idade,6]
+
+#calculo 2 vidas X = Idade1 = maior e Y = Idade 2 = menor
+Vidasconjuntas=valorfacebene*(duasvidas[1,7]-duasvidas[n,7])/duasvidas[1,6]
+anuidadeX=valorfacebene*(duasvidas[Idade1,7]-duasvidas[Idade1+n,7])/duasvidas[Idade1,6]
+anuidadeY=valorfacebene*(duasvidas[Idade2,7]-duasvidas[Idade2+n,7])/duasvidas[Idade2,6]
+UltimoSobrevivente=anuidadeX+anuidadeY-Vidasconjuntas
+AnuidadeReversaoXY=(anuidadeY-Vidasconjuntas)*coefreversao #de X para Y
+AnuidadeReversaoYX=(anuidadeX-Vidasconjuntas)*coefreversao #de Y para X
+
+#calculo 3 vidas
