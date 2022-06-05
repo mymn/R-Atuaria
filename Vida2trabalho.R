@@ -6,21 +6,25 @@
 #nomenclatura com 'r' devido a conflito com funcoes nativas do R
 #colunas impares das tabuas F, pares M. 
 library(svDialogs)
-input=function(){ #funcao com os inputs
+
+#funcao com os inputs
+input=function(){ 
+  nvidas<<-as.numeric(dlgInput("Numero de vidas(2 ou 3): ", Sys.info()["user"])$res)
   IdadeTitular<<-as.numeric(dlgInput("Idade do titular ", Sys.info()["user"])$res)
   IdadeConjuge<<-as.numeric(dlgInput("Idade do conjuge ", Sys.info()["user"])$res)
-  IdadeDependente<<-as.numeric(dlgInput("Idade do dependente (0 a 24) ", Sys.info()["user"])$res)
   SexoTitular<<-as.character(dlgInput("Sexo do titular (M ou F) ", Sys.info()["user"])$res)
   SexoConjuge<<-as.character(dlgInput("Sexo do conjuge (M ou F) ", Sys.info()["user"])$res)
-  SexoDependente<<-as.character(dlgInput("Sexo do dependente (M ou F) ", Sys.info()["user"])$res)
+  if(nvidas==3){
+    SexoDependente<<-as.character(dlgInput("Sexo do dependente (M ou F) ", Sys.info()["user"])$res)
+    IdadeDependente<<-as.numeric(dlgInput("Idade do dependente (0 a 24) ", Sys.info()["user"])$res)}
   taxajuros<<-as.numeric(dlgInput("Taxa de juros (decimal) ", Sys.info()["user"])$res)
-  TipoTabua<<-as.numeric(dlgInput("Tabua(1=AT2000,2=B...,3=...): ", Sys.info()["user"])$res)
-  nvidas<<-as.numeric(dlgInput("Numero de vidas(2 ou 3): ", Sys.info()["user"])$res)
-  pensaomorte<<-as.numeric(dlgInput("Pensao por morte(sim=1, nao=0): ", Sys.info()["user"])$res)
+  TipoTabua<<-as.numeric(dlgInput("Tabua(1=AT2000,2=BR-EMSmt-2015,3=BR-EMSmt-2021): ", Sys.info()["user"])$res)
   valorfacebene<<-as.numeric(dlgInput("Valor de face do beneficio: ", Sys.info()["user"])$res)
-  #duracaocontrato<<-as.numeric(dlgInput("Duracao da vigencia contratual: ", Sys.info()["user"])$res)
-  #pagamento<<-as.numeric(dlgInput("Valor do(s) pagamentos: ", Sys.info()["user"])$res)
-  coefreversao<<-as.numeric(dlgInput("Coeficiente de reversao(em decimal): ", Sys.info()["user"])$res)
+  duracaocontrato<<-as.numeric(dlgInput("Duracao da vigencia contratual(anos): ", Sys.info()["user"])$res)
+  pagamento<<-as.numeric(dlgInput("Duracao do(s) pagamentos(anos): ", Sys.info()["user"])$res)
+  pensaomorte<<-as.numeric(dlgInput("Pensao por morte(sim=1, nao=0): ", Sys.info()["user"])$res)
+  if(pensaomorte==1){
+    coefreversao<<-as.numeric(dlgInput("Coeficiente de reversao(em decimal): ", Sys.info()["user"])$res)}
 }
 
 input() #chamar funcao com os inputs
@@ -45,43 +49,45 @@ variaveis=function(){
   M<<-vector(length=agemax+1)
   p<<-vector(length=agemax+1)
   qx<<-vector(length=agemax+1)
+  #alocar tabuas para os individuos escolhidos
+  tabuaX=vector(length=agemax)
+  tabuaY=vector(length=agemax)
+  tabuaZ=vector(length=agemax)
+  if(nvidas==2){
+    #criando dataframes
+    duasvidasX=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+    duasvidasY=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+    duasvidasXY=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
+    #renomear colunas
+    colnames(duasvidasX)=c("Idade","qx","lx","dx","v^x","Dx","Nx","Cx","Mx")
+    colnames(duasvidasY)=c("Idade","qy","ly","dy","v^y","Dy","Ny","Cy","My")
+    colnames(duasvidasXY)=c("Idade","pxy","lxy","dxy","v^t","Dxy","Nxy","Cxy","Mxy")
+    #agemax=tail(duasvidasX[,1],n=1)
+  }
+  if(nvidas==3){
+    #criando dataframes
+    tresvidasX=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+    tresvidasY=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+    tresvidasZ=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
+    tresvidasXY=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
+    tresvidasYZ=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
+    tresvidasXZ=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
+    tresvidasXYZ=data.frame(idade,p,l,d,vx,Dx,N,C,M)
+    #renomear colunas
+    colnames(tresvidasX)=c("Idade","qx","lx","dx","v^x","Dx","Nx","Cx","Mx")
+    colnames(tresvidasY)=c("Idade","qy","ly","dy","v^y","Dy","Ny","Cy","My")
+    colnames(tresvidasZ)=c("Idade","qz","lz","dz","v^z","Dz","Nz","Cz","Mz")
+    colnames(tresvidasXY)=c("Idade","pxy","lxy","dxy","v^t","Dxy","Nxy","Cxy","Mxy")
+    colnames(tresvidasYZ)=c("Idade","pyz","lyz","dyz","v^t","Dyz","Nyz","Cyz","Myz")
+    colnames(tresvidasXZ)=c("Idade","pxz","lxz","dxz","v^t","Dxz","Nxz","Cxz","Mxz")
+    colnames(tresvidasXYZ)=c("Idade","pxyz","lxyz","dxyz","v^t","Dxyz","Nxyz","Cxyz","Mxyz")
+  }
   variaveis
 }
 
 variaveis()  #chamada da funcao para criacao dos vetores
-  
 
-if(nvidas==2){
-  #criando dataframes
-  duasvidasX=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
-  duasvidasY=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
-  duasvidasXY=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
-  #renomear colunas
-  colnames(duasvidasX)=c("Idade","qx","lx","dx","v^x","Dx","Nx","Cx","Mx")
-  colnames(duasvidasY)=c("Idade","qy","ly","dy","v^y","Dy","Ny","Cy","My")
-  colnames(duasvidasXY)=c("Idade","pxy","lxy","dxy","v^t","Dxy","Nxy","Cxy","Mxy")
-  #agemax=tail(duasvidasX[,1],n=1)
-}
-if(nvidas==3){
-  #criando dataframes
-  tresvidasX=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
-  tresvidasY=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
-  tresvidasZ=data.frame(idade,qx,l,d,vx,Dx,N,Cx,M)
-  tresvidasXY=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
-  tresvidasYZ=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
-  tresvidasXZ=data.frame(idade,p,l,d,vx,Dx,N,Cx,M)
-  tresvidasXYZ=data.frame(idade,p,l,d,vx,Dx,N,C,M)
-  #renomear colunas
-  colnames(tresvidasX)=c("Idade","qx","lx","dx","v^x","Dx","Nx","Cx","Mx")
-  colnames(tresvidasY)=c("Idade","qy","ly","dy","v^y","Dy","Ny","Cy","My")
-  colnames(tresvidasZ)=c("Idade","qz","lz","dz","v^z","Dz","Nz","Cz","Mz")
-  colnames(tresvidasXY)=c("Idade","pxy","lxy","dxy","v^t","Dxy","Nxy","Cxy","Mxy")
-  colnames(tresvidasYZ)=c("Idade","pyz","lyz","dyz","v^t","Dyz","Nyz","Cyz","Myz")
-  colnames(tresvidasXZ)=c("Idade","pxz","lxz","dxz","v^t","Dxz","Nxz","Cxz","Mxz")
-  colnames(tresvidasXYZ)=c("Idade","pxyz","lxyz","dxyz","v^t","Dxyz","Nxyz","Cxyz","Mxyz")
-  #agemax=tail(tresvidasX[,1],n=1)
-}
-
+#funcao para selecionar tabua
 selecttable=function(Sexo,TipoTabua){
   if(Sexo=="M" && TipoTabua==1){tabua=c(tabuainput[,2])}
   else if(Sexo=="F" && TipoTabua==1){tabua=tabuainput[,1]}
@@ -89,16 +95,12 @@ selecttable=function(Sexo,TipoTabua){
   else if(Sexo=="F" && TipoTabua==2){tabua=tabuainput[,3]}
   else if(Sexo=="M" && TipoTabua==3){tabua=tabuainput[,6]}
   else if(Sexo=="F" && TipoTabua==3){tabua=tabuainput[,5]}
+  tabuaX<<-selecttable(SexoTitular,TipoTabua)
+  tabuaY<<-selecttable(SexoConjuge,TipoTabua)
+  tabuaZ<<-selecttable(SexoDependente,TipoTabua)  
 }
 
-#alocar tabuas para os individuos escolhidos
-tabuaX=vector(length=agemax)
-tabuaY=vector(length=agemax)
-tabuaZ=vector(length=agemax)
-
-tabuaX=selecttable(SexoTitular,TipoTabua)
-tabuaY=selecttable(SexoConjuge,TipoTabua)
-tabuaZ=selecttable(SexoDependente,TipoTabua)
+selecttable()
 
 
 
@@ -158,16 +160,21 @@ TresVidas=function()
   
 tresvidasXYZ=TresVidas(tresvidasXYZ,tresvidasX,tresvidasY,tresvidasZ,tresvidasXY,tresvidasXZ,tresvidasYZ,taxajuros,l0)
 
-#calculo 1 vida (falta definir n)
+#calculo 1 vida (falta definir n) 
 
 #antecipada
 anuidadeVitAntec=valorfacebene*umavida[Idade,7]/umavida[Idade,6]
 anuidadeTempAntec=valorfacebene*(umavida[Idade,7]-umavida[Idade+n,7])/umavida[Idade,6]
 anuidadeVitDifAntec=valorfacebene*(umavida[Idade+n,7])/umavida[Idade,6]
+#diferida em n e temp em m
+anuidadeTempDifAntec=valorfacebene*(umavida[Idade+n,7]-umavida[Idade+n+m,7])/umavida[Idade,6]
 #postecipada
 anuidadeVitPos=valorfacebene*umavida[Idade+1,7]/umavida[Idade,6]
 anuidadeTempPos=valorfacebene*(umavida[Idade+1,7]-umavida[Idade+n+1,7])/umavida[Idade,6]
 anuidadeVitDifPos=valorfacebene*(umavida[Idade+n+1,7])/umavida[Idade,6]
+#diferida em n e temp em m
+anuidadeTempDifPos=valorfacebene*(umavida[Idade+n+1,7]-umavida[Idade+n+m+1,7])/umavida[Idade,6]
+
 #Seguros Vida PUP
 SeguroVida=valorfacebene*umavida[Idade,9]/umavida[Idade,6]
 SeguroVidaDif=valorfacebene*umavida[Idade+n,9]/umavida[Idade,6]
@@ -176,7 +183,7 @@ SeguroVidaTemp=valorfacebene*(umavida[Idade,9]-umavida[Idade+n,9])/umavida[Idade
 SeguroVidaAnual=valorfacebene*umavida[Idade,9]/umavida[Idade,7]
 SeguroVidaTemp=valorfacebene*(umavida[Idade,9]-umavida[Idade+n,9])/umavida[Idade,6]/(umavida[Idade,7]-umavida[Idade+n,7])/umavida[Idade,6]
 
-#calculo 2 vidas X = Idade1 = maior e Y = Idade 2 = menor
+#calculo 2 vidas X = Idade1 = maior e Y = Idade 2 = menor  n = duracao bene
 Vidasconjuntas=valorfacebene*(duasvidas[1,7]-duasvidas[n,7])/duasvidas[1,6]
 anuidadeX=valorfacebene*(duasvidas[Idade1,7]-duasvidas[Idade1+n,7])/duasvidas[Idade1,6]
 anuidadeY=valorfacebene*(duasvidas[Idade2,7]-duasvidas[Idade2+n,7])/duasvidas[Idade2,6]
@@ -185,3 +192,4 @@ AnuidadeReversaoXY=(anuidadeY-Vidasconjuntas)*coefreversao #de X para Y
 AnuidadeReversaoYX=(anuidadeX-Vidasconjuntas)*coefreversao #de Y para X
 
 #calculo 3 vidas
+
