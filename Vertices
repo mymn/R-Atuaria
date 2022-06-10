@@ -36,49 +36,36 @@ vertices[,2]=0
 #coluna com os valores
 #necessario converter em data juliana todos periodos
 fluxovertice=function(nfluxos,fluxo){
-  dist0=which.min(abs(vertices[,1]-fluxo[i,1]))
   for(i in 1:nfluxos){
-    vertices[dist0,2]=vertices[dist0,2]+fluxo[i,2]
+    dist0=which.min(abs(vertices[,1]-fluxo[i,1]))
+    vertices[dist0,2]=vertices[dist0,2]+fluxo[i,2]}
   }
 }
-#ajustar para distribuir baseado na diferenca da distancia
-dist1=abs((dist0+1)-(dist0,2)) 
-dist2=abs((dist0+1)-(dist0,2))
-  if (dist1>dist2){
-    vertices[dist0,2]=vertices[dist0,2]+fluxo[i,2]*dist2/dist0
-    vertices[dist0-1,2]=vertices[dist0,2]+fluxo[i,2]*(dist0-dist2)/dist0
-  }
-  else if(dist2>dist1){
-    vertices[dist0,2]=vertices[dist0,2]+fluxo[i,2]*dist1/dist0
-    vertices[dist0+1,2]=vertices[dist0,2]+fluxo[i,2]*(dist0-dist1)/dist0
-  }
-  else if()
-  
-  #VP=MTM=VF/(1+taxa)
-#criar funcao para gerar uma funcao com assintota
 
-taxajuros=0.11
-#tempo=c(1,2,3,4,5)
-valor=100
-a=-3 #valor
-b=20
-c=3
-tau=40 #50 a 100
-vp=vector(length = 100)
-for(i in 1:100){
-  vp[i]=c(a+b*(1-exp(-i/tau))/(i/tau)+c*exp(-i/tau))
-  #vp[i]=c(valor*(1+taxajuros)^i)
+
+if (dist0>1||dist0<nvertices)
+  dist1=abs((vertices[dist0+1,2]-vertices[dist0,2]
+  dist2=abs((vertices[dist0-1,2]-vertices[dist0,2]
+#ajustar para distribuir baseado na diferenca da distancia
+if (dist1>dist2){
+  vertices[dist0,2]=vertices[dist0,2]+fluxo[i,2]*dist2/dist0
+  vertices[dist0-1,2]=vertices[dist0,2]+fluxo[i,2]*(dist0-dist2)/dist0
 }
-plot(vp)
-a -6 a 12
-a=12
-m=100
-for(i in 1:1000){
-  vp[i]=c(1-(1-a)*(1-exp(-i))/(i-a*exp(-i)))
+else if(dist2>dist1){
+  vertices[dist0,2]=vertices[dist0,2]+fluxo[i,2]*dist1/dist0
+  vertices[dist0+1,2]=vertices[dist0,2]+fluxo[i,2]*(dist0-dist1)/dist0
 }
-plot(vp)
-#weibull
-ln exp
-Nelson-Siegel
-library(YieldCurve)
-Nelson.Siegel(rate=juros,maturity) #maturity em meses
+
+beta1
+beta2
+beta3
+curva=beta1+beta2*((1-exp(-tau/lambda))/(tau/lambda))+beta3*(((1-exp(-tau/lambda))/(tau/lambda))-exp(-tau/lambda))
+
+if(dist0==0){
+#else if()
+  
+#Nelson-Siegel
+#library(YieldCurve)
+#Nelson.Siegel(rate=juros,maturity) #maturity em meses
+
+  
