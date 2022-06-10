@@ -184,7 +184,7 @@ SeguroVidaAnual=valorfacebene*umavida[Idade,9]/umavida[Idade,7]
 SeguroVidaTemp=valorfacebene*(umavida[Idade,9]-umavida[Idade+n,9])/umavida[Idade,6]/(umavida[Idade,7]-umavida[Idade+n,7])/umavida[Idade,6]
 
 #calculo 2 vidas X = Idade1 = maior e Y = Idade 2 = menor  n = duracao bene
-Vidasconjuntas=valorfacebene*(duasvidas[1,7]-duasvidas[n,7])/duasvidas[1,6]
+Vidasconjuntas=valorfacebene*(duasvidas[idade,7]-duasvidas[idade+n,7])/duasvidas[1,6]
 anuidadeX=valorfacebene*(duasvidas[Idade1,7]-duasvidas[Idade1+n,7])/duasvidas[Idade1,6]
 anuidadeY=valorfacebene*(duasvidas[Idade2,7]-duasvidas[Idade2+n,7])/duasvidas[Idade2,6]
 UltimoSobrevivente=anuidadeX+anuidadeY-Vidasconjuntas
