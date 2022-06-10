@@ -79,3 +79,6 @@ for(i in 1:1000){
 plot(vp)
 #weibull
 ln exp
+Nelson-Siegel
+library(YieldCurve)
+Nelson.Siegel(rate=juros,maturity) #maturity em meses
