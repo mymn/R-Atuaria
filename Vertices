@@ -56,16 +56,19 @@ else if(dist2>dist1){
   vertices[dist0+1,2]=vertices[dist0,2]+fluxo[i,2]*(dist0-dist1)/dist0
 }
 
-beta1
-beta2
-beta3
-curva=beta1+beta2*((1-exp(-tau/lambda))/(tau/lambda))+beta3*(((1-exp(-tau/lambda))/(tau/lambda))-exp(-tau/lambda))
 
-if(dist0==0){
-#else if()
-  
-#Nelson-Siegel
-#library(YieldCurve)
-#Nelson.Siegel(rate=juros,maturity) #maturity em meses
+library(rfast)
+aux=vector(length=nvertices)
+for(j in j:nfluxos){
+  for(i in 1:nvertices){
+    aux[i]=abs(fluxo[i,j]-vertice[i,j])
+    b=Rfast::nth(x, 2, descending = F)
+    a=Rfast::nth(x, 1, descending = F)
+    c=abs(aux[a]-aux[b])
+ 
+   vertices[b,j]=(a/c)*fluxo[,j]
+   vertices[a,j]=(b/c)*fluxo[,j]
+ }
+https://stackoverflow.com/questions/2453326/fastest-way-to-find-second-third-highest-lowest-value-in-vector-or-column
 
   
