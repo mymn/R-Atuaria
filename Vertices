@@ -43,8 +43,8 @@ for(j in 1:nfluxos){
     a=Rfast::nth(as.numeric(aux), 1, descending = F,na.rm=T,index.return=T)
     c=abs(vertices[a,1]-vertices[b,1])
     
-    vertices[b,2]=(aux[a]/c)*fluxo[b,2]
-    vertices[a,2]=(aux[b]/c)*fluxo[a,2]
+    vertices[b,2]=(abs(fluxo[j,1]-vertices[a,1])/c)*fluxo[b,2]
+    vertices[a,2]=(abs(fluxo[j,1]-vertices[b,1])/c)*fluxo[a,2]
   }
 }
 
