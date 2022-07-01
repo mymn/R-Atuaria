@@ -35,19 +35,21 @@ library(Rfast)
 #vetor auxiliar para armazenar as "distancias" entre as datas de 
 #vencimento dos fluxos e dos vertices
 aux=vector(length=nvertices)
-for(j in 1:nfluxos){
-  for(i in 1:nvertices){
-    aux[j]=as.numeric(abs(fluxo[j,1]-vertices[i,1]))
-#indices dos 2 menores valores no vetor auxiliar(a,b)
-    b=Rfast::nth(as.numeric(aux), 2, descending = F,na.rm=T,index.return=T)
-    a=Rfast::nth(as.numeric(aux), 1, descending = F,na.rm=T,index.return=T)
-    c=abs(vertices[a,1]-vertices[b,1])
-    
-    vertices[b,2]=(abs(fluxo[j,1]-vertices[a,1])/c)*fluxo[b,2]
-    vertices[a,2]=(abs(fluxo[j,1]-vertices[b,1])/c)*fluxo[a,2]
+distribuicao=function(nfluxos,nvertices,vertices,fluxo){
+  for(j in 1:nfluxos){
+    for(i in 1:nvertices){
+      aux[j]=as.numeric(abs(fluxo[j,1]-vertices[i,1]))
+      #indices dos 2 menores valores no vetor auxiliar(a,b)
+      b=Rfast::nth(as.numeric(aux), 2, descending = F,na.rm=T,index.return=T)
+      a=Rfast::nth(as.numeric(aux), 1, descending = F,na.rm=T,index.return=T)
+      c=abs(vertices[a,1]-vertices[b,1])
+      #distribuicao proporcional nos vertices
+      vertices[b,2]=(abs(fluxo[j,1]-vertices[a,1])/c)*fluxo[b,2]
+      vertices[a,2]=(abs(fluxo[j,1]-vertices[b,1])/c)*fluxo[a,2]
+    }
   }
+  vertices
 }
-
 PV=function(value,periods,rate){
   value=value*(1/(1+rate)^periods)
   return(value)
@@ -56,3 +58,36 @@ PV=function(value,periods,rate){
 PVn=function(value,periods,rate,npayments)
   value=value*(1/(1+rate)^(npayments/252))
 #base ndays in a year = 252
+
+carteira=matrix(ncol=3,nrows=nfluxos)
+colnames(carteira)=c("Dias Uteis compra ao venc","VF no venc","Dias Uteis hoje ao venc")
+
+hoje=Tojulian(Sys.Date())
+
+#carteira[1,]= dias compra -> vencimento
+#carteira[2,]=valor ao final do vencimento
+#carteira[3,]=dias hoje -> vencimento
+#
+
+calculocarteira=function(){
+  hoje=Tojulian(Sys.Date())
+  for(i in 1:nfluxos){
+    if(titulospre$Produto=="CDB"){
+      #compra ao venc
+      carteira[1,i]=Tojulian(titulospre[6,i])-Tojulian(titulospre[3,i])*252/365
+      carteira[3,i]=Tojulian(titulospre[6,i])-Tojulian(hoje)*252/365
+      carteira[2,i]=titulospre[1,i]*(1+titulospre[5,i])^(carteira[1,i]/252)*titulospre[4,i]
+    }
+    if(titulospre$Produto=="LTN"){
+      carteira[1,i]=Tojulian(titulospre[6,i])-Tojulian(titulospre[3,i])*252/365
+      carteira[3,i]=Tojulian(titulospre[6,i])-Tojulian(hoje)*252/365
+      carteira[2,i]=titulospre[4,i]*1000
+    }
+    if(titulospre$Produto=="NTNF"){
+      carteira[1,i]=Tojulian(titulospre[6,i])-Tojulian(titulospre[3,i])*252/365
+      carteira[3,i]=Tojulian(titulospre[6,i])-Tojulian(hoje)*252/365
+      carteira[2,i]=titulospre[4,i]*1000
+    }
+    
+  }
+}  
