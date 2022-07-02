@@ -42,22 +42,18 @@ distribuicao=function(nfluxos,nvertices,vertices,fluxo){
       #indices dos 2 menores valores no vetor auxiliar(a,b)
       b=Rfast::nth(as.numeric(aux), 2, descending = F,na.rm=T,index.return=T)
       a=Rfast::nth(as.numeric(aux), 1, descending = F,na.rm=T,index.return=T)
-      c=abs(vertices[a,1]-vertices[b,1])
       #distribuicao proporcional nos vertices
-      vertices[b,2]=(abs(fluxo[j,1]-vertices[a,1])/c)*fluxo[b,2]
-      vertices[a,2]=(abs(fluxo[j,1]-vertices[b,1])/c)*fluxo[a,2]
+      vertices[b,2]=(abs(fluxo[j,1]-vertices[a,1])/abs(vertices[a,1]-vertices[b,1]))*fluxo[b,2]
+      print(a)
+      print(b)
+      #print(abs(fluxo[j,1]-vertices[a,1]))
+      #print(abs(vertices[a,1]-vertices[b,1]))
+      vertices[a,2]=(abs(fluxo[j,1]-vertices[b,1])/abs(vertices[a,1]-vertices[b,1]))*fluxo[a,2]
+      #print(abs(fluxo[j,1]-vertices[b,1]))
     }
   }
-  vertices
+  sum(vertices[,2])
 }
-PV=function(value,periods,rate){
-  value=value*(1/(1+rate)^periods)
-  return(value)
-}
-
-PVn=function(value,periods,rate,npayments)
-  value=value*(1/(1+rate)^(npayments/252))
-#base ndays in a year = 252
 
 carteira=matrix(ncol=3,nrows=nfluxos)
 colnames(carteira)=c("Dias Uteis compra ao venc","VF no venc","Dias Uteis hoje ao venc")
@@ -83,11 +79,33 @@ calculocarteira=function(){
       carteira[3,i]=Tojulian(titulospre[6,i])-Tojulian(hoje)*252/365
       carteira[2,i]=titulospre[4,i]*1000
     }
-    if(titulospre$Produto=="NTNF"){
-      carteira[1,i]=Tojulian(titulospre[6,i])-Tojulian(titulospre[3,i])*252/365
-      carteira[3,i]=Tojulian(titulospre[6,i])-Tojulian(hoje)*252/365
-      carteira[2,i]=titulospre[4,i]*1000
-    }
-    
   }
 }  
+
+curva=function(){
+  Selic=0.1275
+  banual=0.15
+  bdiario=(1+banual)^(1/252)-1
+  #a = aceleracao convergencia media
+  #b = longo prazo
+  #sigma(S) = volatilidade da taxa de juros
+  a=0.00002
+  b=bdiario
+  S=0.0002
+  rt=vector(length=1000)
+  rt1=vector(length=1000)
+  rtanual=vector(length=1000)
+  rt[1]=(1+Selic)^(1/252)-1
+  for(i in 2:1000){
+    rt[i]=rt[i-1]+a*(b-rt[i-1])+S*(rt[i-1]^0.5)*qnorm(runif(1,min=0,max=1))
+  }
+  #plot(rt)
+  rt1=1+rt
+  for(i in 1:1000){
+    rtanual[i]=prod(rt1[1:i],na.rm = TRUE)^(252/i)-1
+  }
+  rtanual
+}
+
+plot(vertices[,2])
+
