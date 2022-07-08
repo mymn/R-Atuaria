@@ -3,7 +3,7 @@ library(readxl)
 library(fastDummies)
 library(SignifReg)
 logit=function(){
-  dummy<-read_excel("D:/BrowserDownloads/Avaliação_P01_bd.xlsx")
+  dummy<-read_excel("D:/BrowserDownloads/AvaliaÃ§Ã£o_P01_bd.xlsx")
   dummy=dummy_cols(dummy,remove_selected_columns = T)
   model1=glm(dummy$Perdas~.,data=dummy,family=binomial(link='logit'))
   modellogit=step(model1,direction='both',k=3.841459)
@@ -24,7 +24,7 @@ modelpoisson=function(){
   multiclass.roc(dummy$QTsinistro, predicted)
 }
 modelpoisson()
-poisson=
+probpoisson(x)=(lambda^x/factorial(x))*exp(-lambda)
 #exp(resultado) - log
 
 modelnormal=function(){
@@ -82,5 +82,5 @@ modelnormalinv=function(){
 #para valor de k = qchisq(0.05,1,lower.tail=FALSE)
 #summary
 #AIC 
-#Residual deviance = Função desvio
+#Residual deviance = FunÃ§Ã£o desvio
 #
